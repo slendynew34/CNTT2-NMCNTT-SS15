@@ -1,0 +1,66 @@
+# Giải Cứu Dữ Liệu Nhóm Startup Bị Mất Trên Máy Tính Cá Nhân
+## Phần 1: Phân tích vấn đề
+
+### 1. Bảng phân tích rủi ro và nguyên nhân gốc rễ cho từng hạng mục tài liệu
+
+|**Hạng mục**|**Rủi ro (Tỷ lệ %)**|**Nguyên nhân gốc rễ**|**Xếp loại**|
+|-|-|-|-|
+|**Business Plan (20 trang)**|**100% (Mất trắng)**|Phụ thuộc hoàn toàn vào phần cứng cục bộ duy nhất của một thiết bị (Không có bản sao dự phòng trên Cloud).|**Cao**|
+|**Mã nguồn giao diện (HTML/CSS)**|**80% - 90% (Rủi ro hỏng/thất lạc)**|Lưu trữ đơn lẻ trên thiết bị di động vật lý (USB) dễ bị hỏng hóc, mất mát và thiếu cơ chế quản lý phiên bản tập trung.|**Cao**|
+|**Database danh sách test user**|**50% - 60% (Lệch dữ liệu cũ)**|Lưu trữ phân mảnh trên máy cá nhân, thiếu cơ chế cập nhật thời gian thực (Realtime), dẫn đến việc sử dụng dữ liệu từ 2 tuần trước.|**Trung bình**|
+|**Slide Pitch (PowerPoint)**|**30% - 40% (Nhầm phiên bản)**|Trao đổi thủ công qua ứng dụng chat (Zalo), đặt tên file cảm tính (`v7_final_FINAL`) dẫn đến không kiểm soát được đâu là bản mới nhất.|**Trung bình**|
+|**Tài liệu SRS (Word)**|**40% - 50% (Xung đột/Trôi phiên bản)**|Gửi nhận file qua email lặp đi lặp lại tạo ra nhiều nhánh file độc lập, không rõ ràng tính chính xác.|**Trung bình**|
+
+### 2. Hiện tượng "23 phiên bản file tồn tại trên nhiều thiết bị"
+
+-   **Tên gọi kỹ thuật:** Hiện tượng này gọi là **Phân mảnh phiên bản (Version Fragmentation)** hoặc **Xung đột phiên bản cục bộ (Version Collision)**, đi kèm với việc thiếu hệ thống Quản lý phiên bản tập trung (Version Control / Source Control).
+    
+-   **Nguyên nhân gây ra:** Do nhóm làm việc theo phương thức truyền thống thủ công (gửi file qua Zalo, USB, Email). Mỗi khi một thành viên chỉnh sửa, họ lại tạo ra một bản sao mới với các tên gọi tùy tiện (`v1`,  `v2`,  `final`,  `suasau`,...). Khi gửi trả lại trưởng nhóm, trưởng nhóm lại lưu đè hoặc tạo thêm một tên file khác, làm phình to số lượng bản sao độc lập không đồng bộ với nhau trên nhiều thiết bị.
+    
+-   **Hậu quả đối với dự án phần mềm thực tế:**
+    
+    -   **Mất kiểm soát mã nguồn và tài liệu:** Không thể xác định chính xác đâu là dòng code hoặc dòng văn bản mới nhất và chuẩn xác nhất để chạy thử nghiệm hoặc nộp cho Hội đồng.
+        
+    -   **Lãng phí thời gian hợp nhất (Merge Conflict):** Mất hàng giờ đồng hồ để rà soát, so sánh từng dòng code/nội dung giữa các file để gộp lại, dễ dẫn đến việc ghi đè nhầm các tính năng quan trọng đã viết.
+        
+    -   **Đình trệ tiến độ dự án:** Gây tranh cãi nội bộ, giảm hiệu suất làm việc nhóm và nguy cơ cao thất bại trước các mốc deadline quan trọng (như buổi Pitching trước Hội đồng).
+
+## Phần 2: Sửa lỗi & Nghiệm thu
+
+### 3. Thiết kế Quy trình Hybrid Workflow cho nhóm CampusPay
+
+#### Sơ đồ 3 bước (Hybrid Workflow)
+```
+[ 1. Thao tác Local ]  ──>  [ 2. Kích hoạt Auto Sync ]  ──>  [ 3. Lưu trữ & Đồng bộ Cloud ]
+- Mở/Sửa file trực tiếp       - Nhấn Ctrl + S để lưu        - Tự động đẩy bản cập nhật 
+  trên ổ SSD máy tính           - Phần mềm ngầm nhận diện     - Dữ liệu an toàn, sẵn sàng
+  (Tốc độ cao, không giật)      - Truyền tải dạng Delta Sync    cho nhóm làm việc chung
+  ```
+  #### Chi tiết cấu hình quy trình:
+
+-   **Phần mềm sử dụng:** Google Drive for Desktop hoặc Microsoft OneDrive.
+    
+-   **Thư mục được phép Sync (Đồng bộ):** Thư mục làm việc chung của dự án (`D:/CampusPay/`) chứa mã nguồn (`src/`), tài liệu SRS (`Docs/`), Business Plan (`Plan/`), và các tệp tài nguyên phục vụ trực tiếp cho startup.
+    
+-   **Thư mục KHÔNG nên Sync (Ngoại tuyến / Loại trừ):**
+    
+    -   Thư mục chứa các tệp dung lượng cực lớn không cần thiết hoặc file tạm hệ thống: Thư mục game, phim ảnh giải trí cá nhân, thư mục cài đặt phần mềm (`Program Files`).
+        
+    -   Các thư mục gói thư viện tạm trong lập trình (ví dụ:  `node_modules/`,  `target/`, thư mục build) vì chứa hàng chục ngàn tệp nhỏ gây nghẽn băng thông đồng bộ và tốn dung lượng đám mây một cách vô ích.
+        
+
+### 4. Bẫy dữ liệu (Data Trap) khi gập máy trước khi đồng bộ hoàn tất
+
+-   **Biểu tượng trạng thái trên File Explorer hiển thị gì?**
+    
+    -   Biểu tượng **vòng xoáy mũi tên xanh (Syncing / Đang đồng bộ)** thay vì dấu **tích xanh hoàn tất (Synced)**.
+        
+-   **Hệ thống xử lý thế nào?**
+    
+    -   Khi người dùng gập máy đột ngột, tiến trình đồng bộ ngầm bị ngắt kết nối mạng ngay lập tức. Dữ liệu mới sửa đổi **chỉ nằm trên ổ cứng cục bộ (Local SSD)** và **chưa được đẩy lên máy chủ đám mây**. Nếu thiết bị bị mất hoặc hỏng ổ cứng ngay lúc đó, phần dữ liệu vừa sửa sẽ bị mất hoàn toàn trên Cloud.
+        
+-   **Thành viên nên làm gì để chắc chắn file đã được đồng bộ trước khi tắt máy?**
+    
+    1.  Kiểm tra kỹ khay hệ thống (System Tray) hoặc biểu tượng thư mục trên File Explorer để đảm bảo trạng thái chuyển từ _Đang đồng bộ_ sang **tích xanh (Synced)**.
+        
+    2.  Hoặc mở trực tiếp giao diện ứng dụng quản lý đám mây (Google Drive / OneDrive) kiểm tra dòng chữ _"All files up to date"_ (Tất cả tệp đã được cập nhật) rồi mới tiến hành gập máy hoặc tắt nguồn.

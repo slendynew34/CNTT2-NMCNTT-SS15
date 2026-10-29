@@ -1,0 +1,89 @@
+# Nhóm SmartCampus Chạy Nước Rút Trước Deadline Nộp Báo Cáo
+## Phần 1 – Thiết lập Hybrid Workflow
+
+1.  **Sự cố hỏng ổ cứng mất file `Slide_BaoCao.pptx` có xảy ra không? Vì sao?**
+    
+    -   **Không.**
+        
+    -   **Vì:** Khi áp dụng mô hình _Hybrid Workflow_, mọi chỉnh sửa thực hiện cục bộ trên máy tính (Local) sẽ được phần mềm đồng bộ ngầm tự động đẩy lên mây (Auto Sync) theo thời gian thực hoặc ngay khi có kết nối mạng. Do đó, bản cập nhật mới nhất đã được lưu trữ an toàn trên Cloud, việc hỏng ổ cứng máy cá nhân không làm mất dữ liệu của nhóm.
+        
+2.  **3 bước thiết lập Auto Sync hướng dẫn cả nhóm:**
+    
+    -   **Bước 1:** Cài đặt và đăng nhập ứng dụng quản lý đám mây chính thức (Google Drive for Desktop hoặc Microsoft OneDrive) lên máy tính cá nhân.
+        
+    -   **Bước 2:** Gom toàn bộ thư mục làm việc của dự án (`SmartCampus`) vào chung một thư mục gốc được chỉ định đồng bộ (ví dụ: thư mục _Google Drive_ trên máy).
+        
+    -   **Bước 3:** Kiểm tra biểu tượng trạng thái đồng bộ chuyển sang màu xanh (dấu tích _Synced_ hoặc thông báo _All files up to date_) để xác nhận dữ liệu đã được đẩy thành công lên Cloud.
+        
+3.  **Thao tác khôi phục 2 trang bị xóa nhầm trong `BaoCao_CuoiKy_SmartCampus.docx`:**
+    
+    -   Sử dụng tính năng **Version History (Lịch sử phiên bản)** của Google Docs/Drive: Mở tệp tin $\rightarrow$ Chọn mục **File**  $\rightarrow$  **Version history**  $\rightarrow$  **See version history**, sau đó tìm mốc thời gian 10 phút trước khi xảy ra sự cố và bấm **Restore this version** (Khôi phục phiên bản này) để đưa tài liệu về trạng thái nguyên vẹn ban đầu mà không cần gõ lại.
+        
+4.  **Xử lý sai lầm khi đồng bộ toàn bộ thư mục dự án:**
+    
+    -   **Nhận diện sai lầm:**
+        
+        -   Đồng bộ thư mục `node_modules` chứa hàng vạn file nhỏ gây nghẽn băng thông đồng bộ, tốn tài nguyên và không cần thiết vì thư mục này có thể tự sinh ra lệnh cài đặt lại (`npm install`).
+            
+        -   Tải và để các tệp phim 4K giải trí cá nhân vào thư mục dự án làm lãng phí dung lượng lưu trữ trên đám mây nhóm.
+            
+    -   **Đề xuất cách xử lý đúng:** Cấu hình loại trừ thư mục `node_modules` bằng tệp cấu hình `.gitignore` (nếu dùng Git) hoặc thiết lập loại trừ thư mục trên ứng dụng đồng bộ, đồng thời di chuyển các tệp phim giải trí ra khỏi thư mục làm việc chung của dự án.
+
+## Phần 2 – Phân quyền chia sẻ an toàn
+
+1.  **Bảng cấu hình quyền chia sẻ chuẩn:**
+    
+|**File**|**Mức quyền**|**Phạm vi chia sẻ**|**Giải thích**|
+|-|-|-|-|
+|`BaoCao_CuoiKy_SmartCampus.docx` gửi giảng viên|**Viewer**|**Restricted** (Cấp qua email trường của giảng viên)|Cho phép giảng viên đọc và chấm điểm dễ dàng nhưng tuyệt đối ngăn chặn rủi ro sửa đè hoặc làm hỏng nội dung gốc.|
+|`Slide_BaoCao.pptx` cho 5 thành viên nhóm|**Editor**|**Restricted** (Chỉ cấp cho 5 email thành viên nhóm)|Cho phép toàn bộ các thành viên trong nhóm cùng chung tay đóng góp và chỉnh sửa nội dung bài thuyết trình đồng thời.|
+|`GopY_BanNhap.docx` gửi anh khóa trên|**Commenter**|**Restricted** (Cấp qua email cá nhân của anh khóa trên)|Cho phép anh khóa trên bôi đen văn bản để đóng góp ý kiến, nhận xét mà không làm thay đổi trực tiếp tài liệu gốc của nhóm.|
+|`ThongTin_CaNhan_NhomVien.xlsx`|**Viewer** (hoặc ẩn kín)|**Restricted** (Chỉ quản lý dự án giữ quyền xem nội bộ)|Chứa thông tin nhạy cảm (CCCD, SĐT) của nhóm, cần bảo mật tuyệt đối, không chia sẻ rộng rãi ra bên ngoài.
+
+2.  **Quy tắc Cờ Đỏ Bảo mật với file `ThongTin_CaNhan_NhomVien.xlsx`:**
+    
+    -   **Quy tắc Cờ Đỏ Bảo mật:** TUYỆT ĐỐI không kết hợp quyền `Anyone with the link` với quyền `Editor` đối với các tài liệu chứa dữ liệu nhạy cảm hoặc cá nhân.
+        
+    -   **Giải thích:** Việc mở quyền công khai toàn mạng Internet kết hợp với toàn quyền chỉnh sửa/xóa sẽ biến tệp tin thành mục tiêu mở cho các bot tự động quét link hoặc kẻ xấu lợi dụng để xóa sạch dữ liệu, đánh cắp thông tin định danh (CCCD, SĐT) của các thành viên, gây rò rỉ dữ liệu cá nhân nghiêm trọng (Data Breach).
+        
+3.  **2 thao tác trong cửa sổ Settings của `Slide_BaoCao.pptx` để tránh rủi ro:**
+    
+    -   **Thao tác 1:** Tắt tùy chọn **"Editors can change permissions and share"** (Ngăn người chỉnh sửa tự ý thay đổi quyền hoặc mời thêm người lạ vào file).
+        
+    -   **Thao tác 2:** Bật/Chọn tùy chọn **"Disable options to download, print, and copy for commenters and viewers"** (hoặc khóa tính năng tải xuống/sao chép nếu cần thiết lập bảo vệ nâng cao cho tài liệu nội bộ).
+
+## Phần 3 – Tổ chức giao tiếp nhóm chuẩn doanh nghiệp
+
+1.  **3 vấn đề trong đoạn hội thoại Zalo:**
+    
+    -   **No-Hello:** Nhắn câu chào cụt lốc _"có ai rảnh không"_ rồi bắt người khác phải đợi phản hồi mới vào vấn đề chính, làm mất thời gian của đồng đội.
+        
+    -   **Tin nhắn không phân luồng (Plat Chat):** Gom tất cả mọi nội dung (từ chuyện nhờ vả đến gửi ảnh mèo giải trí `[ảnh mèo]`) vào chung một khung chat chính khiến thông tin dự án bị pha loãng và trôi đi.
+        
+    -   **Spam `@all` giờ khuya:** Trưởng nhóm dùng `@all` lúc đêm muộn (23:47) làm phiền thời gian nghỉ ngơi của toàn bộ thành viên không liên quan.
+        
+2.  **Đề xuất 2 tên Channel/Topic chuẩn trên Lark/Slack:**
+    
+    -   `#project-smart-campus`: Kênh chính chuyên thảo luận chuyên môn, chia sẻ tài liệu và tiến độ làm việc chung của đồ án.
+        
+    -   `#random-chat`: Kênh riêng biệt dành cho việc giải trí, gửi hình ảnh thư giãn, tránh làm ảnh hưởng đến luồng công việc.
+        
+3.  **Viết lại tin nhắn của Lan theo tư duy Asynchronous (Đủ ngữ cảnh):**
+    
+    > _"Chào mọi người, hiện tại mình đang phụ trách phần viết biểu đồ luồng dữ liệu (Data Flow) trong báo cáo `BaoCao_CuoiKy_SmartCampus.docx`, đoạn từ trang 5 đến trang 8 đang bị vướng ở logic xác thực tài khoản. Bạn nào rảnh có thể xem giúp mình đoạn này với nhé, mình để link file ở đây để mọi người tiện góp ý bất cứ lúc nào: [Link_Tai_Lieu]. Cảm ơn mọi người nhiều!"_
+    
+4.  **Viết lại tin nhắn của Trưởng nhóm (Dùng Schedule Send & Tag đích danh):**
+    
+    -   _Hẹn giờ gửi (Schedule Send):_ Cài đặt 08:00 sáng hôm sau.
+        
+    -   _Nội dung thông điệp:_
+        
+        > _"Chào buổi sáng mọi người! Hôm nay là deadline nộp báo cáo cuối kỳ rồi, mình gửi thông báo kiểm tra tiến độ:{br}@Nam Kiểm tra lại phần code tích hợp API thanh toán giúp mình nhé.{br}@Lan Hoàn thiện nốt phần chỉnh sửa nội dung tài liệu báo cáo.{br}Mọi người hoàn thành sớm để nhóm kịp thời gian nộp bài nhé!"_
+
+## Phần 4 – Thông báo tổng hợp
+
+> **[Nội dung tin nhắn đăng lên kênh `#thong-bao` của nhóm]**
+> 
+> _"Chào cả nhà, mình đã tiến hành chuẩn hóa lại không gian làm việc nhóm như sau:_
+>  _1. Đã cấu hình xong **Auto Sync** cho toàn bộ thư mục dự án `SmartCampus` lên Cloud, dữ liệu của nhóm đã được đồng bộ an toàn và loại trừ các file rác._ 
+> _2. Đã hoàn tất chia sẻ file báo cáo `BaoCao_CuoiKy_SmartCampus.docx` cho Giảng viên hướng dẫn ở chế độ **Viewer / Restricted** an toàn tuyệt đối._ _3. Giao việc cho các thành viên hoàn thành chặng nước rút: @Nam kiểm tra lại phần API backend và @Lan hoàn thiện nốt phần định dạng slide thuyết trình nhé! Cố gắng lên mọi người ơi!"_

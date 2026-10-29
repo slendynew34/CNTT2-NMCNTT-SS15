@@ -1,0 +1,42 @@
+# Kiểm Tra Vì Sao Dữ Liệu Khách Hàng CampusPay Bị Rò Rỉ Ra Ngoài
+## Phần 1: Phân tích lỗ hổng
+
+### 1. Xác định nguồn gốc trực tiếp gây rò rỉ dữ liệu khách hàng
+
+-   **Dòng log gây rò rỉ trực tiếp:** Dòng thứ nhất lúc **08:15 T2** (`campuspay_beta_users.xlsx` do Thành viên A thực hiện).
+    
+-   **Giải thích kỹ thuật:**
+    
+    -   **Tổ hợp quyền + phạm vi vi phạm:** Quyền **Editor** đi kết hợp với phạm vi **Anyone with the link**. Đây chính là vi phạm nghiêm trọng **"Quy tắc Cờ Đỏ Bảo mật"**.
+        
+    -   **Cơ chế rò rỉ:** Do để chế độ công khai đường dẫn trên Internet kết hợp toàn quyền chỉnh sửa/truy cập, bất kỳ ai (kể cả bot quét link hoặc người ngoài) đều có thể click vào xem, tải về tệp chứa thông tin nhạy cảm (họ tên, số điện thoại, số dư tài khoản của 200 sinh viên test) hoặc thậm chí vô tình/cố ý phát tán, chỉnh sửa dữ liệu đó lên các nhóm mạng xã hội công khai.
+        
+
+### 2. Ba giả thuyết giải thích việc "Email người lạ" truy cập được file `campuspay_api_keys.txt` (mặc dù file này được đặt Restricted cho Email B)
+
+1.  **Giả thuyết 1 (Chia sẻ nhầm thư mục mẹ - Parent Folder Inheritance):** Trưởng nhóm hoặc một thành viên khác đã đặt quyền chia sẻ dạng công khai hoặc cấp quyền rộng cho cả một **thư mục chứa tệp này** trên Google Drive, khiến file con bên trong vô tình thừa hưởng quyền truy cập từ thư mục cha.
+    
+2.  **Giả thuyết 2 (Chuyển tiếp hoặc bị lộ tài khoản/thiết bị):** Email B đã đăng nhập tài khoản trên thiết bị công cộng, hoặc vô tình chia sẻ quyền truy cập/mã khóa/đường dẫn nội bộ cho người lạ, hoặc để lộ phiên đăng nhập trình duyệt.
+    
+3.  **Giả thuyết 3 (Thay đổi quyền chia sẻ file thủ công sau đó):** Ai đó có quyền quản trị/chỉnh sửa file này đã âm thầm thay đổi cài đặt phạm vi chia sẻ từ _Restricted_ sang _Anyone with the link_ ở một thời điểm nào đó trước 10:00 T3 rồi sau đó đổi lại, khiến người lạ kịp thời lưu lại đường dẫn và truy cập.
+## Phần 2: Sửa lỗi & Nghiệm thu
+
+### 3. Bảng cấu hình quyền chia sẻ đúng chuẩn cho từng file
+
+|Tên file|Quyền đúng|Phạm vi đúng|Giải thích ngắn gọn|
+|-|-|-|-|
+|**`campuspay_beta_users.xlsx`**|**Viewer** (hoặc **Restricted Editor** chỉ định danh)|**Restricted** (Chỉ cấp qua email nội bộ nhóm test/quản lý)|Dữ liệu nhạy cảm của khách hàng/sinh viên tuyệt đối không được để lộ hay cho phép người ngoài sửa bừa, tránh rò rỉ thông tin cá nhân.|
+|**`campuspay_api_keys.txt`**|**Viewer** (hoặc **Restricted**)|**Restricted** (Chỉ cấp cho Backend Developer / Trưởng nhóm)|File chứa mã khóa API tối mật của hệ thống thanh toán, cần khóa chặt bằng chế độ hạn chế để ngăn chặn tuyệt đối kẻ gian đánh cắp.|
+|**`slide_pitch_v8.pptx`**|**Commenter** hoặc **Editor**|**Restricted** (Nội bộ nhóm dự án) hoặc **Anyone with the link (chỉ Viewer/Commenter)**|Tài liệu thuyết trình gọi vốn/báo cáo không chứa thông tin nhạy cảm cốt lõi, có thể mở rộng phạm vi góp ý nội bộ nhưng không được kết hợp quyền Editor công khai.|
+
+### 4. Xử lý sự cố và tính năng quản lý liên kết nâng cao
+
+-   **Tính năng Google Drive giúp vô hiệu hóa toàn bộ link cũ nhanh nhất:**
+    
+    -   Thay đổi quyền chia sẻ của file từ chế độ công khai sang **Restricted (Hạn chế)**, hoặc sử dụng tùy chọn **"Reset link" / Thay đổi đường liên kết** (trong phần cài đặt nâng cao chia sẻ) để vô hiệu hóa toàn bộ các URL cũ đã bị phát tán trước đó.
+        
+-   **Khi nào nên dùng tính năng 'Set Expiration Date' (Đặt thời hạn truy cập) thay vì thu hồi quyền thủ công?**
+    
+    -   **Trường hợp nên dùng:** Khi bạn chia sẻ tài liệu cho các bên thứ ba mang tính tạm thời (như cộng tác viên bên ngoài, giám khảo chấm thi, đối tác xem xét hồ sơ, hoặc sinh viên test bản Beta trong thời hạn cố định 1 tuần).
+        
+    -   **Lợi ích:** Hệ thống sẽ tự động tự động hóa việc thu hồi quyền truy cập khi hết thời gian, giúp bạn không bị quên thu hồi thủ công, đảm bảo an toàn tuyệt đối cho dữ liệu sau khi dự án kết thúc.

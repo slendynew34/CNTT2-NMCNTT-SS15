@@ -1,0 +1,19 @@
+# Ngăn chặn rò rỉ dữ liệu do chia sẻ sai quyền
+## Phần 1 (Phân tích):
+### 1. Kết hợp sai lầm chế độ "Anyone with the link" với quyền "Editor"
+-   **Mở cửa cho toàn mạng Internet ("Anyone with the link"):** Bất kỳ ai có đường dẫn (dù vô tình hay hữu ý) đều có thể truy cập thẳng vào tài liệu chứa danh sách thông tin nhạy cảm của khách hàng mà không cần xác thực danh tính.
+    -   **Trao "chìa khóa vạn năng" (Quyền Editor):** Bất kỳ ai truy cập được link cũng có toàn quyền chỉnh sửa, ghi đè hoặc **xóa sạch dữ liệu** bên trong.
+   ### 2. Xử lý cẩu thả dữ liệu nhạy cảm của doanh nghiệp
+-   Dữ liệu khách hàng (như số điện thoại) là tài sản tối quan trọng của một Startup. Việc chia sẻ tài nguyên này một cách dễ dãi, thiếu kiểm soát ra môi trường bên ngoài mà không phân quyền cụ thể từng cá nhân (Restrict theo email) là một rủi ro cực kỳ lớn, dẫn đến việc dữ liệu bị phát tán và phá hoại (Data Leak/Data Destruction) như tình huống thực tế đã xảy ra.
+## Phần 2 (Sửa lỗi):
+**(1) Mức quyền nào cho cộng tác viên?**
+-   **Đáp án:**  **Editor** (nếu cộng tác viên cần trực tiếp chỉnh sửa, nhập liệu) hoặc **Commenter** (nếu họ chỉ cần xem và góp ý, đề xuất chỉnh sửa mà không được thay đổi dữ liệu gốc).
+    -   _Lưu ý:_ Việc dùng quyền Editor chỉ an toàn khi **không** kết hợp với chế độ chia sẻ công khai toàn mạng Internet ("Anyone with the link").
+
+ **(2) Chế độ chia sẻ nào là an toàn 100%?**
+-   **Đáp án:** Chế độ **Hạn chế (Restricted)** – Chỉ những người có email cụ thể được cấp quyền mới có thể truy cập vào tài liệu. Không một ai bên ngoài (kể cả khi có đường dẫn) có thể mở file nếu không được chủ sở hữu thêm vào danh sách quản lý.
+ 
+ **(3) Cần bật (hoặc chọn) tính năng gì để ngăn cộng tác viên tự ý mời thêm người lạ?**
+-   **Đáp án:** Cần truy cập vào phần **Cài đặt chia sẻ nâng cao (Share Settings / Gear icon)** của tệp và **tích chọn/bỏ chọn tùy chọn chặn quyền của Editor**:
+     -   _Tùy chọn cần tắt:_  **"Cho phép người chỉnh sửa thay đổi quyền và chia sẻ tài liệu này"** (Editors can change permissions and share).
+      -   Việc này giúp cô lập quyền hạn, đảm bảo chỉ có một mình Chủ sở hữu (Owner) mới có quyền thêm bớt thành viên, ngăn chặn hoàn toàn việc cộng tác viên tự ý chia sẻ tài liệu ra bên ngoài.
